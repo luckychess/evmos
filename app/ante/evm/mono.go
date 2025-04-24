@@ -294,10 +294,16 @@ func (md MonoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		decUtils.TxFee = txFee
 		decUtils.TxGasLimit += gas
 
+		// log before the nonce is incremented
+		ctx.Logger().Info("tx before increment", "tx nonce", txData.GetNonce(), "account sequence", acc.GetSequence(), "tx hash", ethMsg.Hash)
+
 		// 10. increment sequence
 		if err := IncrementNonce(ctx, md.accountKeeper, acc, txData.GetNonce()); err != nil {
 			return ctx, err
 		}
+
+		// log after the nonce is incremented
+		ctx.Logger().Info("tx after increment", "tx nonce", txData.GetNonce(), "account sequence", acc.GetSequence(), "tx hash", ethMsg.Hash)
 
 		// 11. gas wanted
 		if err := CheckGasWanted(ctx, md.feeMarketKeeper, tx, decUtils.Rules.IsLondon); err != nil {
