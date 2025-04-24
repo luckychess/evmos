@@ -3,6 +3,7 @@
 package evm
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 
@@ -295,7 +296,8 @@ func (md MonoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		decUtils.TxGasLimit += gas
 
 		// log before the nonce is incremented
-		ctx.Logger().Info("tx before increment", "tx nonce", txData.GetNonce(), "account sequence", acc.GetSequence(), "tx hash", ethMsg.Hash)
+		fmt.Printf("tx before increment: tx nonce %d, account sequence %d, tx hash %s\n",
+			txData.GetNonce(), acc.GetSequence(), ethMsg.Hash)
 
 		// 10. increment sequence
 		if err := IncrementNonce(ctx, md.accountKeeper, acc, txData.GetNonce()); err != nil {
@@ -303,7 +305,8 @@ func (md MonoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		}
 
 		// log after the nonce is incremented
-		ctx.Logger().Info("tx after increment", "tx nonce", txData.GetNonce(), "account sequence", acc.GetSequence(), "tx hash", ethMsg.Hash)
+		fmt.Printf("tx after increment: tx nonce %d, account sequence %d, tx hash %s\n",
+			txData.GetNonce(), acc.GetSequence(), ethMsg.Hash)
 
 		// 11. gas wanted
 		if err := CheckGasWanted(ctx, md.feeMarketKeeper, tx, decUtils.Rules.IsLondon); err != nil {
